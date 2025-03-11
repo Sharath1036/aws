@@ -1,0 +1,42 @@
+Step 1: Create a Lambda Function in your AWS Account and note down the Function ARN
+
+Step 2: Create a GitHub Repository and push your source code to your GitHub repository
+
+Step 3: Create an Action in your repository and add the following block of code in to your GitHub Actions .yaml file
+
+
+Copy
+
+Copy
+name: Deploy Lambda Function
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install zip tool
+        uses: montudor/action-zip@v1
+      - name: Create Zip file for Lambda function
+        run: zip -r code.zip .
+      - name: AWS CLI v2
+        uses: imehedi/actions-awscli-v2@latest
+        with:
+          args: "lambda update-function-code \
+            --function-name arn:aws:<provide your function ARN Here> \
+            --zip-file fileb://code.zip"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "us-east-1"
+Step 4: Push the code and you should be seeing the code that you pushed on your AWS Lambda Console.
+
+
+
+
+
